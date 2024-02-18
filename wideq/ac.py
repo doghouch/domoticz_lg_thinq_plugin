@@ -326,6 +326,10 @@ class ACDevice(Device):
         op_value = self.model.enum_value("airState.operation", op.value)
         self._set_control("airState.operation", op_value, command="Operation")
 
+    def set_sleep_timer(self, minutes):
+        """Set the sleep timer in minutes. Max. is around 36 hours, or -1 mins."""
+        self._set_control("airState.reservation.sleepTime", minutes)
+
     def get_filter_state(self):
         """Get information about the filter."""
 
@@ -365,6 +369,10 @@ class ACDevice(Device):
         """Get the speaker volume level."""
         return 0  # Device does not support volume control.
 
+    def get_sleep_timer(self):
+        """Get the current sleep timer value in minutes."""
+        return self.get_status().sleep_timer
+    
     def get_status(self):
         """Get status information
         This method retrieves the entire device snapshot....
@@ -503,6 +511,12 @@ class ACStatus(object):
     def light(self):
         return self._str_to_num(
             self.data["airState.lightingState.displayControl"]
+        )
+
+    @property
+    def sleep_timer(self):
+        return self._str_to_num(
+            self.data["airState.reservation.sleepTime"]
         )
 
     @property
